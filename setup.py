@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="async-requests",  # Replace with your package name
+    name="requests-async",  # Replace with your package name
     version="0.1.0",
-    author="太岁又沐风",
+    author="taisui",
     author_email="tais00@qq.com",
     description="An asynchronous HTTP request library based on httpx.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yourusername/async-requests",  # Replace with your project URL
+    url="https://github.com/taisuii/requests-async",  # Replace with your project URL
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

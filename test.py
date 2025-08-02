@@ -3,8 +3,8 @@
 异步HTTP请求库使用示例
 """
 import asyncio
-from async_requests import (
-    async_requests, get, post, get_json, post_json, 
+from requests_async import (
+    requests_async, get, post, get_json, post_json, 
     batch_get, download_file, session, AsyncRequests
 )
 
@@ -15,7 +15,7 @@ async def example_basic_usage():
     
     # 方式1: 使用全局实例
     try:
-        response = await async_requests.get("https://httpbin.org/get")
+        response = await requests_async.get("https://httpbin.org/get")
         print(f"状态码: {response.status_code}")
         print(f"响应内容: {response.json()}")
     except Exception as e:
@@ -45,11 +45,11 @@ async def example_different_methods():
         print(f"POST: {post_response.status_code}")
         
         # PUT请求
-        put_response = await async_requests.put(f"{base_url}/put", json={"test": "put"})
+        put_response = await requests_async.put(f"{base_url}/put", json={"test": "put"})
         print(f"PUT: {put_response.status_code}")
         
         # DELETE请求
-        delete_response = await async_requests.delete(f"{base_url}/delete")
+        delete_response = await requests_async.delete(f"{base_url}/delete")
         print(f"DELETE: {delete_response.status_code}")
         
     except Exception as e:

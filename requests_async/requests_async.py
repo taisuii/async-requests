@@ -410,4 +410,4 @@ def _cleanup_on_exit():
 atexit.register(_cleanup_on_exit)
 
 # 为了保持向后兼容性，保留原来的全局实例
-async_requests = _global_manager
+requests_async = _global_manager
