@@ -5,7 +5,8 @@
       "Bash(python:*)",
       "Bash(find:*)",
       "Bash(pip install:*)",
-      "Bash(pytest:*)"
+      "Bash(pytest:*)",
+      "Bash(git add:*)"
     ],
     "deny": []
   }

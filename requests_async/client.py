@@ -106,8 +106,21 @@ async def request(method: str, url: str, **kwargs) -> Response:
     Example:
         response = await requests_async.request('GET', 'https://httpbin.org/get')
     """
-    async with AsyncSession() as session:
-        return await session.request(method, url, **kwargs)
+    # Extract session parameters
+    session_params = {}
+    request_params = {}
+    
+    # Session parameters that should go to AsyncSession
+    session_param_names = {'timeout', 'headers', 'proxies', 'proxy', 'verify', 'cert', 'trust_env'}
+    
+    for key, value in kwargs.items():
+        if key in session_param_names:
+            session_params[key] = value
+        else:
+            request_params[key] = value
+    
+    async with AsyncSession(**session_params) as session:
+        return await session.request(method, url, **request_params)
 
 
 async def get(url: str, **kwargs) -> Response:
