@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="requests-async",  # Replace with your package name
-    version="0.1.0",
+    version="0.2.0",
     author="taisui",
     author_email="tais00@qq.com",
     description="An asynchronous HTTP request library based on httpx.",

@@ -1,17 +1,20 @@
+
 # requests-async
 
-一个基于httpx的异步HTTP请求库，提供简单易用的接口和自动重试机制。
+> 一个基于 [httpx](https://www.python-httpx.org/) 封装，API 风格类似 requests 的现代、易用、支持自动重试的 Python 异步 HTTP 客户端
 
-## 功能特性
+---
 
-- 支持所有HTTP方法(GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)
-- 自动重试机制
-- 全局实例和函数接口
-- 会话管理
-- JSON便利方法
-- 批量请求支持
-- 文件下载功能
-- 自定义客户端配置
+## 特性
+
+- 🌟 极易上手，API 仿 requests 式风格
+- 🏷️ 支持全局实例/上下文会话/自定义客户端多种用法
+- 🔄 自动重试与失败指数回退
+- 🔒 支持自定义 headers、代理、cookie、超时
+- 📦 支持批量请求、文件下载
+- 🛠️ 高度可扩展，可灵活传递所有 httpx 参数
+
+---
 
 ## 安装
 
@@ -19,131 +22,102 @@
 pip install requests-async
 ```
 
+---
+
 ## 快速开始
 
-### 基本使用
+### 1. 全局实例方式
 
 ```python
-from requests_async import requests_async, get
-
-async def main():
-    # 使用全局实例
-    response = await requests_async.get("https://httpbin.org/get")
-    print(response.json())
-    
-    # 使用全局函数
-    response = await get("https://httpbin.org/get")
-    print(response.status_code)
-
-asyncio.run(main())
+from requests_async import requests_async
+response = await requests_async.get('https://example.com')
+print(response.text)
 ```
 
-### 不同HTTP方法
+### 2. 全局函数方式
 
 ```python
-from requests_async import get, post, put, delete
-
-async def example():
-    # GET请求
-    response = await get("https://httpbin.org/get")
-    
-    # POST请求
-    response = await post("https://httpbin.org/post", json={"key": "value"})
-    
-    # PUT请求
-    response = await put("https://httpbin.org/put", json={"key": "value"})
-    
-    # DELETE请求
-    response = await delete("https://httpbin.org/delete")
+from requests_async import get, post
+response = await get('https://example.com')
 ```
 
-### JSON便利方法
-
-```python
-from requests_async import get_json, post_json
-
-async def example():
-    # 直接获取JSON数据
-    data = await get_json("https://httpbin.org/json")
-    
-    # POST JSON数据并获取JSON响应
-    response = await post_json("https://httpbin.org/post", {"name": "测试"})
-```
-
-### 会话使用
+### 3. 会话 session（推荐）
 
 ```python
 from requests_async import session
 
-async def example():
-    async with session(timeout=15) as s:
-        response1 = await s.get("https://httpbin.org/get")
-        response2 = await s.post("https://httpbin.org/post", json={"test": "data"})
+async with session(timeout=10) as s:
+    resp = await s.get('https://httpbin.org/get')
+    print(resp.json())
 ```
 
-### 批量请求
-
-```python
-from requests_async import batch_get
-
-async def example():
-    urls = [
-        "https://httpbin.org/get?id=1",
-        "https://httpbin.org/get?id=2",
-        "https://httpbin.org/get?id=3"
-    ]
-    
-    responses = await batch_get(urls)
-    for response in responses:
-        print(response.status_code)
-```
-
-### 自定义客户端
+### 4. 自定义客户端（高级用法）
 
 ```python
 from requests_async import AsyncRequests
 
-async def example():
-    client = AsyncRequests(
-        timeout=20.0,
-        max_retries=5,
-        default_headers={"Custom-Header": "Value"}
-    )
-    
-    async with client:
-        response = await client.get("https://httpbin.org/headers")
-        print(response.json())
+client = AsyncRequests(timeout=25, max_retries=5, default_headers={"User-Agent": "Awesome-Async"})
+async with client:
+    r = await client.get('https://example.com/api/data')
+    print(r.status_code, r.text)
 ```
 
-## 高级配置
+---
 
-### 重试机制
+## 常用 API
 
-```python
-from requests_async import AsyncRequests
+| 方法/函数                              | 说明                       |
+| --------------------------------------- | -------------------------- |
+| `get(url, **kwargs)`                    | 异步 GET 请求              |
+| `post(url, **kwargs)`                   | 异步 POST 请求             |
+| `put/patch/delete/head/options(...)`    | 其他常规 HTTP 请求         |
+| `get_json(url, **kwargs)`               | GET 请求并 parse JSON      |
+| `post_json(url, json_data, **kwargs)`   | POST JSON 并 parse JSON    |
+| `download_file(url, file_path, **kw)`   | 下载文件，支持断点续传     |
+| `batch_get(urls, **kwargs)`             | 批量 GET 请求（并发）      |
 
-# 自定义重试次数和超时
-client = AsyncRequests(
-    timeout=30.0,
-    max_retries=3
-)
-```
+- 支持所有 httpx/requests 关键字参数
 
-### 错误处理
+---
+
+## 参数补充说明
+
+- `timeout`: 超时秒数，默认 10
+- `max_retries`: 自动重试次数，默认 3
+- `default_headers`: 请求默认头，可全局配置
+- `proxies/cookies/headers` 等均和 requests/httpx 兼容
+
+---
+
+## 异常处理
+
+所有请求失败且达到最大重试会抛出 `AsyncRequestError`。建议配合 try/except 捕获：
 
 ```python
 from requests_async import AsyncRequestError
 
 try:
-    response = await get("https://httpbin.org/status/500")
+    await get("https://unreachable.url/")
 except AsyncRequestError as e:
-    print(f"请求失败: {e}")
+    print("请求失败：", e)
 ```
 
-## 贡献
+---
 
-欢迎提交问题和拉取请求！
+## 依赖
 
-## 许可证
+- [httpx](https://www.python-httpx.org/)
+- [loguru](https://github.com/Delgan/loguru)
+
+---
+
+## 贡献和反馈
+
+欢迎 PR、issue，也欢迎参与改进文档和样例代码！
+
+---
+
+## License
 
 MIT
+
