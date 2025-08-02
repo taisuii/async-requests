@@ -127,7 +127,7 @@ async def test_headers_and_params():
     """Test custom headers and query parameters"""
     print(f"{Colors.BLUE}Testing headers and parameters...{Colors.RESET}")
     try:
-        headers = {'User-Agent': 'requests-async/0.2.0', 'X-Test-Header': 'test-value'}
+        headers = {'User-Agent': 'requests-async/0.2.1', 'X-Test-Header': 'test-value'}
         params = {'param1': 'value1', 'param2': 'value2'}
         
         response = await requests_async.get(
@@ -140,7 +140,7 @@ async def test_headers_and_params():
         data = response.json()
         
         # Check if our headers were sent
-        assert data['headers']['User-Agent'] == 'requests-async/0.2.0'
+        assert data['headers']['User-Agent'] == 'requests-async/0.2.1'
         assert data['headers']['X-Test-Header'] == 'test-value'
         
         # Check if parameters were sent

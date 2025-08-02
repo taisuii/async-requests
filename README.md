@@ -253,7 +253,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Changelog
 
-### 0.2.0
+### 0.2.1
 - Complete rewrite for simplicity and performance
 - Cleaner API design
 - Better documentation

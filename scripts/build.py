@@ -75,8 +75,8 @@ def main():
     
     print("\n📖 Don't forget to:")
     print("  - Update version in pyproject.toml")
-    print("  - Create a git tag: git tag v0.2.0")
-    print("  - Push the tag: git push origin v0.2.0")
+    print("  - Create a git tag: git tag v0.2.1")
+    print("  - Push the tag: git push origin v0.2.1")
 
 
 if __name__ == '__main__':

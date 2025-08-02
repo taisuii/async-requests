@@ -20,7 +20,7 @@ async def basic_examples():
     
     # POST with JSON
     print("\n2. POST with JSON:")
-    data = {'name': 'requests-async', 'version': '0.2.0'}
+    data = {'name': 'requests-async', 'version': '0.2.1'}
     response = await requests_async.post('https://httpbin.org/post', json=data)
     print(f"Status: {response.status_code}")
     print(f"Sent data: {response.json()['json']}")

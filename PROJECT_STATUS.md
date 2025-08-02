@@ -42,8 +42,8 @@ requests-async/
 ├── scripts/               # 构建脚本
 │   └── build.py
 ├── dist/                  # 构建产物
-│   ├── requests_async-0.2.0-py3-none-any.whl
-│   └── requests_async-0.2.0.tar.gz
+│   ├── requests_async-0.2.1-py3-none-any.whl
+│   └── requests_async-0.2.1.tar.gz
 ├── README.md              # 完整文档
 ├── pyproject.toml         # 现代项目配置
 ├── LICENSE                # MIT许可证
@@ -107,8 +107,8 @@ async with requests_async.AsyncSession(
 ## 📦 PyPI发布准备
 
 ### 已构建的包
-- `requests_async-0.2.0-py3-none-any.whl` (6.5KB)
-- `requests_async-0.2.0.tar.gz` (7.6KB)
+- `requests_async-0.2.1-py3-none-any.whl` (6.5KB)
+- `requests_async-0.2.1.tar.gz` (7.6KB)
 
 ### 发布命令
 ```bash
