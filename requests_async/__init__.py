@@ -1,48 +1,30 @@
 """
-Requests-Async: 基于 httpx 的异步 HTTP 客户端库
-让你只需要在 requests 调用前加 await 就能异步使用
+requests-async: Simple async HTTP client with requests-like interface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Basic usage:
+    import requests_async
+    
+    response = await requests_async.get('https://httpbin.org/get')
+    print(response.json())
+
+:copyright: (c) 2024 by requests-async contributors.
+:license: MIT, see LICENSE for more details.
 """
 
-__version__ = "0.1.0"
-__author__ = "Your Name"
-__email__ = "your.email@example.com"
+__version__ = "0.2.0"
+__author__ = "requests-async contributors"
 
 from .client import (
-    AsyncClient, 
-    get, post, put, delete, patch, head, options, request,
-    Response
-)
-from .exceptions import (
-    RequestException, HTTPError, Timeout, ConnectionError,
-    HTTPStatusError, ConnectError, ReadTimeout, WriteTimeout
+    AsyncSession,
+    get, post, put, delete, patch, head, options, request
 )
 
+# Expose httpx types for convenience
+from httpx import Response, HTTPError, RequestError, TimeoutException
+
 __all__ = [
-    'AsyncClient',
+    'AsyncSession',
     'get', 'post', 'put', 'delete', 'patch', 'head', 'options', 'request',
-    'Response',
-    'RequestException', 'HTTPError', 'Timeout', 'ConnectionError',
-    'HTTPStatusError', 'ConnectError', 'ReadTimeout', 'WriteTimeout'
-]
-
-# requests_async/exceptions.py
-"""
-异常类定义 - 兼容 requests 的异常体系
-"""
-
-# 重新导出 httpx 的异常，保持与 requests 兼容的命名
-from httpx import (
-    RequestError as RequestException,
-    HTTPStatusError as HTTPError,
-    TimeoutException as Timeout,
-    ConnectError as ConnectionError,
-    HTTPStatusError,
-    ConnectError,
-    ReadTimeout,
-    WriteTimeout,
-)
-
-__all__ = [
-    'RequestException', 'HTTPError', 'Timeout', 'ConnectionError',
-    'HTTPStatusError', 'ConnectError', 'ReadTimeout', 'WriteTimeout'
+    'Response', 'HTTPError', 'RequestError', 'TimeoutException'
 ]

@@ -1,183 +1,157 @@
 """
-异步 HTTP 客户端 - 基于 httpx 实现
+Async HTTP client implementation based on httpx
 """
 
 import httpx
-from typing import Dict, Any, Optional, Union
+from typing import Optional, Dict, Any, Union
 
-# 直接使用 httpx 的 Response，它已经兼容 requests 的接口
+# Re-export httpx.Response for convenience
 Response = httpx.Response
 
-class AsyncClient:
-    """异步 HTTP 客户端 - httpx.AsyncClient 的封装"""
+
+class AsyncSession:
+    """
+    Async HTTP session with requests-like interface
+    
+    Example:
+        async with AsyncSession() as session:
+            response = await session.get('https://httpbin.org/get')
+            print(response.json())
+    """
     
     def __init__(self, 
-                 timeout: Optional[float] = None,
+                 timeout: Optional[float] = 30.0,
                  headers: Optional[Dict[str, str]] = None,
-                 cookies: Optional[Dict[str, str]] = None,
+                 proxies: Optional[Union[str, Dict[str, str]]] = None,
                  **kwargs):
         """
-        初始化异步客户端
+        Initialize async session
         
         Args:
-            timeout: 请求超时时间（秒）
-            headers: 默认请求头
-            cookies: 默认 cookies
-            **kwargs: 其他 httpx.AsyncClient 参数
+            timeout: Request timeout in seconds (default: 30.0)
+            headers: Default headers for all requests
+            proxies: Proxy configuration (string or dict)
+                    - String: "http://proxy:port" or "socks5://proxy:port"
+                    - Dict: {"http://": "http://proxy:port", "https://": "https://proxy:port"}
+            **kwargs: Additional httpx.AsyncClient arguments
         """
+        # Handle proxy configuration
+        if proxies:
+            if isinstance(proxies, str):
+                # Single proxy string for all protocols
+                kwargs['proxy'] = proxies
+            elif isinstance(proxies, dict):
+                # Multiple proxies - httpx expects 'proxy' for a single proxy
+                # For multiple proxies, we'll use the first one found
+                for protocol in ['https://', 'http://']:
+                    if protocol in proxies:
+                        kwargs['proxy'] = proxies[protocol]
+                        break
+        
         self._client_kwargs = {
             'timeout': timeout,
             'headers': headers,
-            'cookies': cookies,
             **kwargs
         }
-        self._client = None
+        self._client: Optional[httpx.AsyncClient] = None
     
     async def __aenter__(self):
-        await self._ensure_client()
+        self._client = httpx.AsyncClient(**self._client_kwargs)
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close()
-    
-    async def _ensure_client(self):
-        """确保 httpx 客户端存在"""
-        if self._client is None:
-            self._client = httpx.AsyncClient(**self._client_kwargs)
-    
-    async def close(self):
-        """关闭客户端"""
         if self._client:
             await self._client.aclose()
-            self._client = None
     
-    async def request(self, 
-                     method: str, 
-                     url: str,
-                     **kwargs) -> Response:
-        """
-        发送 HTTP 请求
-        
-        Args:
-            method: HTTP 方法
-            url: 请求 URL
-            **kwargs: 其他请求参数，与 requests 兼容
-            
-        Returns:
-            Response: HTTP 响应对象
-        """
-        await self._ensure_client()
+    async def request(self, method: str, url: str, **kwargs) -> Response:
+        """Send HTTP request"""
+        if not self._client:
+            raise RuntimeError("Session not initialized. Use 'async with' statement.")
         return await self._client.request(method, url, **kwargs)
     
     async def get(self, url: str, **kwargs) -> Response:
-        """发送 GET 请求"""
+        """Send GET request"""
         return await self.request('GET', url, **kwargs)
     
     async def post(self, url: str, **kwargs) -> Response:
-        """发送 POST 请求"""
+        """Send POST request"""
         return await self.request('POST', url, **kwargs)
     
     async def put(self, url: str, **kwargs) -> Response:
-        """发送 PUT 请求"""
+        """Send PUT request"""
         return await self.request('PUT', url, **kwargs)
     
     async def delete(self, url: str, **kwargs) -> Response:
-        """发送 DELETE 请求"""
+        """Send DELETE request"""
         return await self.request('DELETE', url, **kwargs)
     
     async def patch(self, url: str, **kwargs) -> Response:
-        """发送 PATCH 请求"""
+        """Send PATCH request"""
         return await self.request('PATCH', url, **kwargs)
     
     async def head(self, url: str, **kwargs) -> Response:
-        """发送 HEAD 请求"""
+        """Send HEAD request"""
         return await self.request('HEAD', url, **kwargs)
     
     async def options(self, url: str, **kwargs) -> Response:
-        """发送 OPTIONS 请求"""
+        """Send OPTIONS request"""
         return await self.request('OPTIONS', url, **kwargs)
 
-# 全局默认客户端
-_default_client = None
 
-async def _get_default_client():
-    """获取默认客户端"""
-    global _default_client
-    if _default_client is None:
-        _default_client = AsyncClient()
-    await _default_client._ensure_client()
-    return _default_client
-
-# 便捷函数 - 就像 requests，但需要 await
+# Global convenience functions
 async def request(method: str, url: str, **kwargs) -> Response:
     """
-    发送 HTTP 请求的便捷函数
+    Send HTTP request using temporary session
     
-    用法：
+    Example:
         response = await requests_async.request('GET', 'https://httpbin.org/get')
     """
-    client = await _get_default_client()
-    return await client.request(method, url, **kwargs)
+    async with AsyncSession() as session:
+        return await session.request(method, url, **kwargs)
+
 
 async def get(url: str, **kwargs) -> Response:
     """
-    发送 GET 请求的便捷函数
+    Send GET request
     
-    用法：
+    Example:
         response = await requests_async.get('https://httpbin.org/get')
+        data = response.json()
     """
     return await request('GET', url, **kwargs)
 
+
 async def post(url: str, **kwargs) -> Response:
     """
-    发送 POST 请求的便捷函数
+    Send POST request
     
-    用法：
-        response = await requests_async.post('https://httpbin.org/post', json={'key': 'value'})
+    Example:
+        response = await requests_async.post('https://httpbin.org/post', 
+                                           json={'key': 'value'})
     """
     return await request('POST', url, **kwargs)
 
+
 async def put(url: str, **kwargs) -> Response:
-    """
-    发送 PUT 请求的便捷函数
-    
-    用法：
-        response = await requests_async.put('https://httpbin.org/put', json={'key': 'value'})
-    """
+    """Send PUT request"""
     return await request('PUT', url, **kwargs)
 
+
 async def delete(url: str, **kwargs) -> Response:
-    """
-    发送 DELETE 请求的便捷函数
-    
-    用法：
-        response = await requests_async.delete('https://httpbin.org/delete')
-    """
+    """Send DELETE request"""
     return await request('DELETE', url, **kwargs)
 
+
 async def patch(url: str, **kwargs) -> Response:
-    """
-    发送 PATCH 请求的便捷函数
-    
-    用法：
-        response = await requests_async.patch('https://httpbin.org/patch', json={'key': 'value'})
-    """
+    """Send PATCH request"""
     return await request('PATCH', url, **kwargs)
 
+
 async def head(url: str, **kwargs) -> Response:
-    """
-    发送 HEAD 请求的便捷函数
-    
-    用法：
-        response = await requests_async.head('https://httpbin.org/head')
-    """
+    """Send HEAD request"""
     return await request('HEAD', url, **kwargs)
 
+
 async def options(url: str, **kwargs) -> Response:
-    """
-    发送 OPTIONS 请求的便捷函数
-    
-    用法：
-        response = await requests_async.options('https://httpbin.org/options')
-    """
+    """Send OPTIONS request"""
     return await request('OPTIONS', url, **kwargs)
