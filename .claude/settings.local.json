@@ -8,7 +8,16 @@
       "Bash(pytest:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(git tag:*)",
+      "Bash(gh release create:*)",
+      "Bash(--title \"requests-async v0.2.2\" )",
+      "Bash(--notes \"# requests-async v0.2.2\n\n## 🐛 Bug Fixes\n- Fixed \\`proxies\\` parameter support in convenience functions (\\`get\\`, \\`post\\`, etc.)\n- Added support for \\`verify\\`, \\`cert\\`, and \\`trust_env\\` parameters\n- Improved parameter separation between session and request parameters\n\n## 🚀 What''s New\n- All convenience functions now properly handle proxy configurations\n- Better compatibility with requests-style parameter usage\n- Enhanced session parameter handling\n\n## 📦 Installation\n\\`\\`\\`bash\npip install requests-async==0.2.2\n\\`\\`\\`\n\n## 🔧 Usage\n\\`\\`\\`python\nimport requests_async\n\n# Now works with proxy parameters\nresponse = await requests_async.post(\n    ''https://api.example.com'',\n    json={''data'': ''test''},\n    proxies={''http'': ''http://proxy:port''},\n    verify=False\n)\n\\`\\`\\`\n\n## 🙏 Thanks\nThis release fixes critical issues with proxy parameter handling. Thank you for reporting the bug!\n\n---\n🤖 Generated with [Claude Code](https://claude.ai/code)\" )",
+      "Bash(dist/*)",
+      "Bash(gh auth:*)",
+      "Bash(--title \"requests-async v0.2.2\" )",
+      "Bash(--notes \"# requests-async v0.2.2\n\n## 🐛 Bug Fixes\n- Fixed \\`proxies\\` parameter support in convenience functions (\\`get\\`, \\`post\\`, etc.)\n- Added support for \\`verify\\`, \\`cert\\`, and \\`trust_env\\` parameters\n- Improved parameter separation between session and request parameters\n\n## 🚀 What''s New\n- All convenience functions now properly handle proxy configurations\n- Better compatibility with requests-style parameter usage\n- Enhanced session parameter handling\n\n## 📦 Installation\n\\`\\`\\`bash\npip install requests-async==0.2.2\n\\`\\`\\`\n\n## 🔧 Usage\n\\`\\`\\`python\nimport requests_async\n\n# Now works with proxy parameters\nresponse = await requests_async.post(\n    ''https://api.example.com'',\n    json={''data'': ''test''},\n    proxies={''http'': ''http://proxy:port''},\n    verify=False\n)\n\\`\\`\\`\n\n## 🙏 Thanks\nThis release fixes critical issues with proxy parameter handling. Thank you for reporting the bug!\n\n---\n🤖 Generated with [Claude Code](https://claude.ai/code)\" )"
     ],
     "deny": []
   }

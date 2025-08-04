@@ -41,12 +41,21 @@ class AsyncSession:
                 # Single proxy string for all protocols
                 kwargs['proxy'] = proxies
             elif isinstance(proxies, dict):
-                # Multiple proxies - httpx expects 'proxy' for a single proxy
-                # For multiple proxies, we'll use the first one found
-                for protocol in ['https://', 'http://']:
-                    if protocol in proxies:
-                        kwargs['proxy'] = proxies[protocol]
+                # For requests-style proxy dict, we need to handle it properly
+                # Convert requests format to httpx format
+                
+                # Find the appropriate proxy for HTTPS requests (preferred)
+                proxy_url = None
+                
+                # Try different key formats that users might use
+                for key in ['https', 'https://', 'http', 'http://']:
+                    if key in proxies:
+                        proxy_url = proxies[key]
                         break
+                
+                if proxy_url:
+                    # Use single proxy for all protocols (most common use case)
+                    kwargs['proxy'] = proxy_url
         
         self._client_kwargs = {
             'timeout': timeout,
