@@ -76,6 +76,11 @@ class AsyncSession:
         """Send HTTP request"""
         if not self._client:
             raise RuntimeError("Session not initialized. Use 'async with' statement.")
+        
+        # Handle requests -> httpx parameter mapping
+        if 'allow_redirects' in kwargs:
+            kwargs['follow_redirects'] = kwargs.pop('allow_redirects')
+        
         return await self._client.request(method, url, **kwargs)
     
     async def get(self, url: str, **kwargs) -> Response:
@@ -127,6 +132,10 @@ async def request(method: str, url: str, **kwargs) -> Response:
             session_params[key] = value
         else:
             request_params[key] = value
+    
+    # Handle requests -> httpx parameter mapping for request parameters
+    if 'allow_redirects' in request_params:
+        request_params['follow_redirects'] = request_params.pop('allow_redirects')
     
     async with AsyncSession(**session_params) as session:
         return await session.request(method, url, **request_params)
